@@ -3,10 +3,8 @@ from django.http import HttpRequest
 from lists.views import home_page
 
 class HomePAgeTest(TestCase):
-    def test_home_page_returns_correct_html(self):
-        request = HttpRequest()
-        response = home_page(request)
-        html = response.content.decode("utf8")
-        self.assertIn("<title>To-Do lists</title>", html)
-        self.assertTrue(html.startswith("<html>"))
-        self.assertTrue(html.endswith("</html>"))
+    def test_homepage_return_correct_html(self):
+        response = self.client.get("/")
+        self.assertContains(response,"<title>To-Do lists</title>")
+        self.assertContains(response,"<html>")
+        self.assertContains(response,"</html>")
