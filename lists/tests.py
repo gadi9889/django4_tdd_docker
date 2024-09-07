@@ -5,6 +5,4 @@ from lists.views import home_page
 class HomePAgeTest(TestCase):
     def test_homepage_return_correct_html(self):
         response = self.client.get("/")
-        self.assertContains(response,"<title>To-Do lists</title>")
-        self.assertContains(response,"<html>")
-        self.assertContains(response,"</html>")
+        self.assertTemplateUsed(response, "home.html")
