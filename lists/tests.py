@@ -1,5 +1,5 @@
 from django.test import TestCase
-from lists.models import Item
+from lists.models import Item, List
 
 class HomePageTest(TestCase):
     def test_uses_home_temp(self):
@@ -23,23 +23,32 @@ class ListViewTest(TestCase):
         self.assertTemplateUsed(response, "list.html")
 
     def test_displays_all_list_items(self):
-        Item.objects.create(text="item 1")
-        Item.objects.create(text="item 2")
+        mylist = List.objects.create()
+        Item.objects.create(text="item 1", list=mylist)
+        Item.objects.create(text="item 2", list=mylist)
 
         response = self.client.get("/lists/only-list/")
 
         self.assertContains(response, "item 1")
         self.assertContains(response, "item 2")
 
-class ItemModelTest(TestCase):
+class ListAndItemModelTest(TestCase):
     def test_saving_and_retrieving_items(self):
+        mylist = List()
+        mylist.save()
+
         first_item = Item()
         first_item.text = "the first (ever) list Item"
+        first_item.list = mylist
         first_item.save()
         
         second_item = Item()
         second_item.text = "the second list Item"
+        second_item.list = mylist
         second_item.save()
+
+        saved_list = List.objects.get()
+        self.assertEqual(saved_list, mylist)
 
         saved_items = Item.objects.all()
         self.assertEqual(saved_items.count(), 2)
@@ -49,3 +58,5 @@ class ItemModelTest(TestCase):
 
         self.assertEqual(first_saved_item.text, "the first (ever) list Item")
         self.assertEqual(second_saved_item.text, "the second list Item")
+        self.assertEqual(first_saved_item.list, mylist)
+        self.assertEqual(second_saved_item.list, mylist)
